@@ -348,15 +348,16 @@ class BaseICAPRequestHandler(StreamRequestHandler):
             self.set_icap_header(b'Encapsulated', enc)
 
         icap_header_str = b''
-        for k in self.icap_headers:
-            for v in self.icap_headers[k]:
-                icap_header_str += "{}: {}\r\n".format(k, v).encode()
-                if k.lower() == b'connection' and v.lower() == b'close':
-                    self.close_connection = True
-                if k.lower() == b'connection' and v.lower() == b'keep-alive':
-                    self.close_connection = False
+        for k, v in self.icap_headers.items():
+            icap_header_str += "{}: {}\r\n".format(k, v).encode()
+            if k.lower() == b'connection' and v.lower() == b'close':
+                self.close_connection = True
+            if k.lower() == b'connection' and v.lower() == b'keep-alive':
+                self.close_connection = False
 
         icap_header_str += b'\r\n'
+        print(f">>>>>>>>>> icap_headers={self.icap_headers}")
+        print(f">>>>>>>>>> icap_header_str={icap_header_str}")
 
         self.wfile.write(
             self.icap_response + b'\r\n' + icap_header_str + enc_header_str,
